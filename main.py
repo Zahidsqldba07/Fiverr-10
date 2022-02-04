@@ -67,14 +67,10 @@ def read_from_file():
             x = {}
             # Remove new line (/n)
             line = line.strip()
-            # Each line contains two items, date and BMI
-            (dato, vand) = line.split()
-            # Process date ?
-            # line[0] =
-            # Process the BMI
-            #x[1] = float(line)
-            # Add it to the list
-            dateandBMI[float(dato)] = float(vand)
+            # Each line contains two items, date and BMI. Split them () is standard a space.
+            (dato, BMI) = line.split()
+            # Write date and BMI to dateandBMI dictionary, cast both as a float
+            dateandBMI[float(dato)] = float(BMI)
 
         bmifile.close()
         return dateandBMI
@@ -82,23 +78,24 @@ def read_from_file():
         print('Was unable to read file {} with BMI data.'.format(fileName))
         return False
 
-def statistics(list):
+def statistics(dict):
     # How many items are there in our list?
     print("\n Statistics: ")
-    print("There are {} items in the list.".format(len(list)))
+    print("There are {} items in the list.".format(len(dict)))
 
     # Average BMI
     sumBMI = 0
-    # Loop through the list and add each item to the sum
-    for l in list:
-        sumBMI += l
+    # Loop through the dictionary and add the value of each item to the sum
+    for item in dict.values():
+        sumBMI += item
 
-    averageBMI = sumBMI / len(list)
+    averageBMI = sumBMI / len(dict)
     print("The average BMI is {}".format(round(averageBMI, 2)))
 
     # Som other statistics: min & max
-    minBMI = round(min(list), 2)
-    maxBMI = round(max(list), 2)
+    # We check only the .values(), and not the .key()
+    minBMI = round(min(dict.values()), 2)
+    maxBMI = round(max(dict.values()), 2)
     print("The lowest BMI in the list is: {}".format(minBMI))
     print("The highest BMI in the list is: {} \n".format(maxBMI))
 
