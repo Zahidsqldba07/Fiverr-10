@@ -1,3 +1,5 @@
+import datetime
+
 def prompter(number):
     print('Please enter your ' + number)
     try:
@@ -25,69 +27,103 @@ def write_to_file(bmi):
         # a = append, create if it doesn't exist and otherwise add.
         collectedData = open('bmi.txt', 'a')
         # Write the bmi to the file and end with a new line
-        collectedData.write("{} \n".format(bmi))
+        collectedData.write("\n{}".format(bmi))
         collectedData.close()
-        result = 'BMI successfully written to file'
+        result = 'BMI successfully written to file.'
         return result
     except:
-        result = 'Failed to write to file'
+        result = 'Failed to write to file.'
+        return result
+
+def write_bmi_and_date(bmi):
+    # Dateformat as used in tildevand.txt 202201010305
+    # 2022 01 01 03 05
+    # year month day hour minute
+    dato = datetime.datetime.now()
+    dato = dato.strftime("%Y%m%d%H%M")
+    try:
+        collectedData = open('bmi.txt', 'a')
+        collectedData.write("\n{} {}".format(dato, bmi))
+        result = 'Date and BMI successfully written to file.'
+        return result
+    except:
+        result = 'Unable to write date and BMI to file.'
         return result
 
 def read_from_file():
     # Open the bmi.txt file in read mode
-    bmifile = open('bmi.txt', 'r')
+    # Maybe the file cannot be opened and will raise an exception
+    fileName = 'bmi.txt'
+    try:
+        bmifile = open(fileName, 'r')
+        # Read the lines into the variable lines
+        lines = bmifile.readlines()
+        # Go through each of the lines
 
-    # Print the whole file
-    # print(bmifile.read())
+        # See https://www.w3schools.com/python/python_lists.asp for types of arrays
+        dateandBMI = {}
 
-    # Read the lines into the variable lines
-    lines = bmifile.readlines()
-    # Go through each of the lines
+        for line in lines:
+            x = {}
+            # Remove new line (/n)
+            line = line.strip()
+            # Each line contains two items, date and BMI
+            (dato, vand) = line.split()
+            # Process date ?
+            # line[0] =
+            # Process the BMI
+            #x[1] = float(line)
+            # Add it to the list
+            dateandBMI[float(dato)] = float(vand)
 
-    # See https://www.w3schools.com/python/python_lists.asp for types of arrays
-    listBMI = []
-
-    for line in lines:
-        # Remove new line (/n)
-        line = line.strip()
-        # Cast it as a float
-        line = float(line)
-        # Add it to the list
-        listBMI.append(line)
-
-    bmifile.close()
-    return listBMI
+        bmifile.close()
+        return dateandBMI
+    except:
+        print('Was unable to read file {} with BMI data.'.format(fileName))
+        return False
 
 def statistics(list):
     # How many items are there in our list?
     print("\n Statistics: ")
-    print("There are {} items in the list".format(len(list)))
+    print("There are {} items in the list.".format(len(list)))
 
     # Average BMI
-    averageBMI = 0
+    sumBMI = 0
     # Loop through the list and add each item to the sum
     for l in list:
-        averageBMI += l
+        sumBMI += l
 
-    gemiddelde = averageBMI / len(list)
-    print("The average BMI is {}".format(round(gemiddelde, 2)))
+    averageBMI = sumBMI / len(list)
+    print("The average BMI is {}".format(round(averageBMI, 2)))
 
     # Som other statistics: min & max
-    print("The lowest BMI in the list is: {}".format(min(list)))
-    print("The highest BMI in the list is: {}".format(max(list)))
+    minBMI = round(min(list), 2)
+    maxBMI = round(max(list), 2)
+    print("The lowest BMI in the list is: {}".format(minBMI))
+    print("The highest BMI in the list is: {} \n".format(maxBMI))
 
 # Ask the user for height and then weight
-height = prompter('height')
-weight = prompter('weight')
+def choices():
+    question = input('What would you like to do? (add, stats or stop)')
+    if question == "add":
+        height = prompter('height')
+        weight = prompter('weight')
+    #elif question == "write":
+        # Calculate the BMI and print
+        bmi = calculate_bmi(height, weight)
+        # Write the userinput to a file
+        print(write_bmi_and_date(bmi))
+        #print(write_to_file(bmi))
+        return choices()
+    elif question == 'stats':
+        # Open the file and read the data
+        listBMI = read_from_file()
+        if(listBMI != False):
+        # Calculate the average BMI, return the lowest and highest BMI in the list
+            statistics(listBMI)
+        return choices()
+    elif question == 'stop':
+        return False
 
-# Calculate the BMI and print
-bmi = calculate_bmi(height, weight)
 
-# Write the userinput to a file
-print(write_to_file(bmi))
-
-# Open the file and read the data
-listBMI = read_from_file()
-
-# Calculate the average BMI, return the lowest and highest BMI in the list
-statistics(listBMI)
+choices()
