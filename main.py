@@ -122,5 +122,4 @@ def choices():
     elif question == 'stop':
         return False
 
-
 choices()
